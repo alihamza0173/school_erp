@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../styles/app_color.dart';
@@ -41,6 +42,13 @@ class _AddClassRoomsState extends State<AddClassRooms> {
   //Method to Clear the TextFields
   void clearTextFields() {
     _classRoomsTextControler.clear();
+  }
+
+  // method to geta data from Subject's collection from firebse
+  Stream<List<String>> getAllClassrooms() {
+    return FirebaseFirestore.instance.collection("classrooms").snapshots().map(
+        (snapshot) =>
+            snapshot.docs.map((doc) => doc['room_name'].toString()).toList());
   }
 
   //Method to Create AlertDialogue Box
@@ -111,7 +119,7 @@ class _AddClassRoomsState extends State<AddClassRooms> {
                     if(validateForm()){   
                       //Code to Store Data in Firebase Firestore
                     FirebaseFirestore.instance.collection('classrooms').add({
-                      'faculty_no': _classRoomsTextControler.text,
+                      'room_name': _classRoomsTextControler.text,
                     }).then((value) {
                       //Show Toast after Data Entered in firebase
                       Fluttertoast.showToast(msg: "Data Entered Successfuly!");
@@ -150,6 +158,78 @@ class _AddClassRoomsState extends State<AddClassRooms> {
         });
   }
 
+  dynamic myProgressBar() {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: ((progressBarBontext) {
+          return const Center(
+            child: CupertinoActivityIndicator(),
+          );
+        }));
+  }
+
+  
+  List<DataColumn> buildColumn(List<String> column) {
+    return column
+        .map((e) => DataColumn(
+            label: Text(e)))
+        .toList();
+  }
+
+  List<DataRow> buildRow(List<String>? classrooms) {
+    return classrooms!
+        .map((e) => DataRow(cells: [
+              DataCell(Text(e)),
+              DataCell(
+                Icon(
+                  Icons.edit,
+                  color: Colors.green[800],
+                ),
+                onTap: () {
+                  // teacherName = e.name;
+                  // teacherAlias = e.alias;
+                  // selectedDesignation = e.designation;
+                  // teacherNumber = e.contactNumber;
+                  // teacherFacultyName = e.facultyNo;
+                  // teacherEmail = e.emailId;
+                  // createAlertDialog(context, isEditMode: true, teacher: e);
+                },
+              ),
+              DataCell(
+                Icon(
+                  CupertinoIcons.delete,
+                  color: Colors.red[500],
+                ),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (c) {
+                        return CupertinoAlertDialog(
+                          title: const Text("Are you Sure!"),
+                          content: const Text('You Want to Delete this Data'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                // myProgressBar();
+                                // deleteTeacerData(e.id);
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      });
+                },
+              ),
+            ]))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -157,6 +237,42 @@ class _AddClassRoomsState extends State<AddClassRooms> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: StreamBuilder<List<String>>(
+                  stream: getAllClassrooms(),
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasError) {
+                      print("Snapshor Error: ${snapshot.error}");
+                    }
+                    if (snapshot.hasData) {
+                      final classrooms = snapshot.data;
+                      final List<String> dataColumn = [
+                        'Name',
+                        'Edit',
+                        'Delete'
+                      ];
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                              decoration: const BoxDecoration(
+                                color: Colors.grey,
+                              ),
+                              columns: buildColumn(dataColumn),
+                              rows: buildRow(classrooms)),
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: CupertinoActivityIndicator(),
+                      );
+                    }
+                  }),
+                ),
+              ),
+            ),
           GestureDetector(
             onTap: (() {
               createAlertDialog(context);

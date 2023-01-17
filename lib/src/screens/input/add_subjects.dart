@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:school_erp/model/subjects.dart';
 
 import '../../styles/app_color.dart';
 import '../../styles/app_text_style.dart';
@@ -61,6 +63,81 @@ class _AddSbujectsState extends State<AddSbujects> {
     'Software Engeeniring',
     'Information Technology',
   ];
+
+  List<DataColumn> buildColumn(List<String> column) {
+    return column
+        .map((e) => DataColumn(
+            label: Text(e)))
+        .toList();
+  }
+
+  dynamic myProgressBar() {
+    return showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: ((progressBarBontext) {
+          return const Center(
+            child: CupertinoActivityIndicator(),
+          );
+        }));
+  }
+
+  List<DataRow> buildRow(List<Subject>? subjects) {
+    return subjects!
+        .map((e) => DataRow(cells: [
+              DataCell(Text(e.subjectCode)),
+              DataCell(Text(e.subjectName)),
+              DataCell(Text('${e.semester}')),
+              DataCell(Text(e.department)),
+              DataCell(Text(e.courseType)),
+              DataCell(
+                Icon(
+                  Icons.edit,
+                  color: Colors.green[800],
+                ),
+                // onTap: () {
+                //   teacherName = e.name;
+                //   teacherAlias = e.alias;
+                //   selectedDesignation = e.designation;
+                //   teacherNumber = e.contactNumber;
+                //   teacherFacultyName = e.facultyNo;
+                //   teacherEmail = e.emailId;
+                //   createAlertDialog(context, isEditMode: true, teacher: e);
+                // },
+              ),
+              DataCell(
+                Icon(
+                  CupertinoIcons.delete,
+                  color: Colors.red[500],
+                ),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (c) {
+                        return CupertinoAlertDialog(
+                          title: const Text("Are you Sure!"),
+                          content: const Text('You Want to Delete this Data'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'Cancel'),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                // myProgressBar();
+                                // deleteTeacerData(e.id);
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      });
+                },
+              ),
+            ]))
+        .toList();
+  }
 
   createAlertDialog(BuildContext context) {
     return showDialog(
@@ -258,10 +335,12 @@ class _AddSbujectsState extends State<AddSbujects> {
               TextButton(
                   onPressed: () {
                     if (validateForm()) {
-                      FirebaseFirestore.instance.collection('subjects').add({
+                      DocumentReference subjet = FirebaseFirestore.instance.collection('subjects').doc();
+                      subjet.set({
+                        'id': subjet.id,
                         'semester': selectedSemester,
                         'department': selectedDepartment,
-                        'subject_name': _subjectCodeTextControler.text,
+                        'subject_name': _subjectNameTextControler.text,
                         'subject_code': _subjectCodeTextControler.text,
                         'course_type': selectedCourseType,
                       }).then((value) {
@@ -290,7 +369,6 @@ class _AddSbujectsState extends State<AddSbujects> {
                                 ],
                               );
                             });
-                        print("Error: ${error.toString()}");
                       });
                     }
                   },
@@ -300,6 +378,13 @@ class _AddSbujectsState extends State<AddSbujects> {
         });
   }
 
+  // method to geta data from teacher's collection from firebse
+  Stream<List<Subject>> getAllSubjects() {
+    return FirebaseFirestore.instance.collection("subjects").snapshots().map(
+        (snapshot) =>
+            snapshot.docs.map((doc) => Subject.fromJson(doc.data())).toList());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -307,6 +392,46 @@ class _AddSbujectsState extends State<AddSbujects> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: StreamBuilder<List<Subject>>(
+                  stream: getAllSubjects(),
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasError) {
+                      print("Snapshot Error: ${snapshot.error}");
+                    }
+                    if (snapshot.hasData) {
+                      final subjects = snapshot.data;
+                      final List<String> dataColumn = [
+                        'Subject Code',
+                        'Subject Name',
+                        'Semester',
+                        'Department',
+                        'Course Type',
+                        'Edit',
+                        'Delete'
+                      ];
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: SingleChildScrollView(
+                          child: DataTable(
+                              decoration: const BoxDecoration(
+                                color: Colors.grey,
+                              ),
+                              columns: buildColumn(dataColumn),
+                              rows: buildRow(subjects)),
+                        ),
+                      );
+                    } else {
+                      return const Center(
+                        child: CupertinoActivityIndicator(),
+                      );
+                    }
+                  }),
+                ),
+              ),
+            ),
           GestureDetector(
             onTap: (() {
               createAlertDialog(context);
