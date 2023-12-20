@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Stack(
               alignment: Alignment.bottomLeft,
               children: [
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height * 0.4,
                   child: Image.asset("assets/images/splash.png"),
                 ),

@@ -1,11 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../styles/app_color.dart';
 import '../../styles/app_text_style.dart';
 import '../input/input_main.dart';
-import '../login/login_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -121,8 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () async{
-                              
+                            onTap: () async {
                               await FirebaseAuth.instance.signOut();
                             },
                             child: Card(

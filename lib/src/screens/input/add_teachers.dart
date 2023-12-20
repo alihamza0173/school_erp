@@ -409,7 +409,7 @@ class _AddTeachersState extends State<AddTeachers> {
                   stream: getTeachersData(),
                   builder: ((context, snapshot) {
                     if (snapshot.hasError) {
-                      print("Snapshor Error: ${snapshot.error}");
+                      debugPrint("Snapshor Error: ${snapshot.error}");
                     }
                     if (snapshot.hasData) {
                       final teachers = snapshot.data;

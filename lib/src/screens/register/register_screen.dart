@@ -15,10 +15,9 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreen extends State<RegisterScreen> {
-
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
- bool validateForm() {
+  bool validateForm() {
     if (formkey.currentState!.validate()) {
       return true;
     } else {
@@ -64,7 +63,7 @@ class _RegisterScreen extends State<RegisterScreen> {
             Stack(
               alignment: Alignment.bottomLeft,
               children: [
-                Container(
+                SizedBox(
                   height: MediaQuery.of(context).size.height * 0.4,
                   child: Image.asset("assets/images/splash.png"),
                 ),
@@ -114,26 +113,25 @@ class _RegisterScreen extends State<RegisterScreen> {
                           hintText: 'HSA@gmail.com',
                           labelText: 'Mobile Number/Email',
                           focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black.withOpacity(0.8)),
+                            borderSide: BorderSide(
+                                color: Colors.black.withOpacity(0.8)),
                           ),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black.withOpacity(0.8)),
+                            borderSide: BorderSide(
+                                color: Colors.black.withOpacity(0.8)),
                           ),
                           border: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black.withOpacity(0.8)),
+                            borderSide: BorderSide(
+                                color: Colors.black.withOpacity(0.8)),
                           ),
                           labelStyle: AppTextStyle.style(
                             color: Colors.black.withOpacity(0.8),
                           ),
                         ),
                         validator: (value) {
-                          if(value == null || value.isEmpty){
+                          if (value == null || value.isEmpty) {
                             return "Required";
-                          }
-                          else{
+                          } else {
                             return null;
                           }
                         },
@@ -165,77 +163,79 @@ class _RegisterScreen extends State<RegisterScreen> {
                           ),
                           labelText: 'Password',
                           focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black.withOpacity(0.8)),
+                            borderSide: BorderSide(
+                                color: Colors.black.withOpacity(0.8)),
                           ),
                           enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black.withOpacity(0.8)),
+                            borderSide: BorderSide(
+                                color: Colors.black.withOpacity(0.8)),
                           ),
                           border: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.black.withOpacity(0.8)),
+                            borderSide: BorderSide(
+                                color: Colors.black.withOpacity(0.8)),
                           ),
                           labelStyle: AppTextStyle.style(
                             color: Colors.black.withOpacity(0.8),
                           ),
                         ),
                         validator: (value) {
-                          if(value == null || value.isEmpty){
+                          if (value == null || value.isEmpty) {
                             return "Required";
-                          }
-                          else{
+                          } else {
                             return null;
                           }
                         },
                       ),
                       const SizedBox(height: 32),
                       GestureDetector(
-                        onTap: () async{
-                          if(validateForm()){
+                        onTap: () async {
+                          if (validateForm()) {
                             myProgressBar();
                             await FirebaseAuth.instance
-                              .createUserWithEmailAndPassword(
-                                  email: _emailTextControler.text,
-                                  password: _passwordTextControler.text)
-                              .then((value) {
-                                FirebaseFirestore.instance.collection('Users').doc(value.user!.uid).set({
-                                  "Email": value.user!.email,
-                                  "Id": value.user!.uid,
+                                .createUserWithEmailAndPassword(
+                                    email: _emailTextControler.text,
+                                    password: _passwordTextControler.text)
+                                .then((value) {
+                              FirebaseFirestore.instance
+                                  .collection('Users')
+                                  .doc(value.user!.uid)
+                                  .set({
+                                "Email": value.user!.email,
+                                "Id": value.user!.uid,
+                              });
+                              Navigator.of(context).pop();
+                              Fluttertoast.showToast(
+                                  msg: "Account Created Scuccessfuly!",
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.black,
+                                  textColor: Colors.white,
+                                  fontSize: 16.0);
+                            }).onError((error, stackTrace) {
+                              Navigator.of(context).pop();
+                              showDialog(
+                                  context: context,
+                                  builder: (c) {
+                                    return AlertDialog(
+                                      title: const Text("Error"),
+                                      content: Text(error.toString()),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'Cancel'),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context, 'OK'),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    );
                                   });
-                                Navigator.of(context).pop();
-                            Fluttertoast.showToast(
-                                msg: "Account Created Scuccessfuly!",
-                                toastLength: Toast.LENGTH_LONG,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.black,
-                                textColor: Colors.white,
-                                fontSize: 16.0);
-                          }).onError((error, stackTrace) {
-                            Navigator.of(context).pop();
-                            showDialog(
-                                context: context,
-                                builder: (c) {
-                                  return AlertDialog(
-                                    title: const Text("Error"),
-                                    content: Text(error.toString()),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'Cancel'),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, 'OK'),
-                                        child: const Text('OK'),
-                                      ),
-                                    ],
-                                  );
-                                });
-                            print("Error: ${error.toString()}");
-                          });
+                              debugPrint("Error: ${error.toString()}");
+                            });
                           }
                         },
                         child: Container(

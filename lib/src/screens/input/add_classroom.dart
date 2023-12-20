@@ -13,16 +13,14 @@ class AddClassRooms extends StatefulWidget {
 }
 
 class _AddClassRoomsState extends State<AddClassRooms> {
-
   //Form Key
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
   //Validator Method for TextField in thr Form
-  String? checkTextFieldValidation(value){
-    if(value == null || value.isEmpty){
+  String? checkTextFieldValidation(value) {
+    if (value == null || value.isEmpty) {
       return "Required";
-    }
-    else{
+    } else {
       return null;
     }
   }
@@ -68,7 +66,7 @@ class _AddClassRoomsState extends State<AddClassRooms> {
                 ),
               ),
             ),
-            
+
             //Form for taking Inputs
             content: Form(
               key: formkey,
@@ -109,46 +107,48 @@ class _AddClassRoomsState extends State<AddClassRooms> {
                 ],
               ),
             ),
-            
+
             //actoins for Dialogue Box
             actions: [
               //Button to Submit Form
               TextButton(
                   onPressed: () {
                     //Check weather the form is validated or not by calling Method
-                    if(validateForm()){   
+                    if (validateForm()) {
                       //Code to Store Data in Firebase Firestore
-                    FirebaseFirestore.instance.collection('classrooms').add({
-                      'room_name': _classRoomsTextControler.text,
-                    }).then((value) {
-                      //Show Toast after Data Entered in firebase
-                      Fluttertoast.showToast(msg: "Data Entered Successfuly!");
-                      //close dialogue box
-                      Navigator.pop(context);
-                      //clear Text Fields
-                      clearTextFields();
-                    }).onError((error, stackTrace) {
-                      //show Dialogue if Error Occurs in Storing Data in Firebase
-                      showDialog(
-                          context: context,
-                          builder: (c) {
-                            return AlertDialog(
-                              title: const Text("Error"),
-                              content: Text(error.toString()),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.pop(context, 'Cancel'),
-                                  child: const Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          });
-                    });
+                      FirebaseFirestore.instance.collection('classrooms').add({
+                        'room_name': _classRoomsTextControler.text,
+                      }).then((value) {
+                        //Show Toast after Data Entered in firebase
+                        Fluttertoast.showToast(
+                            msg: "Data Entered Successfuly!");
+                        //close dialogue box
+                        Navigator.pop(context);
+                        //clear Text Fields
+                        clearTextFields();
+                      }).onError((error, stackTrace) {
+                        //show Dialogue if Error Occurs in Storing Data in Firebase
+                        showDialog(
+                            context: context,
+                            builder: (c) {
+                              return AlertDialog(
+                                title: const Text("Error"),
+                                content: Text(error.toString()),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'Cancel'),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            });
+                      });
                     }
                   },
                   //child of Actions
@@ -169,12 +169,8 @@ class _AddClassRoomsState extends State<AddClassRooms> {
         }));
   }
 
-  
   List<DataColumn> buildColumn(List<String> column) {
-    return column
-        .map((e) => DataColumn(
-            label: Text(e)))
-        .toList();
+    return column.map((e) => DataColumn(label: Text(e))).toList();
   }
 
   List<DataRow> buildRow(List<String>? classrooms) {
@@ -238,41 +234,37 @@ class _AddClassRoomsState extends State<AddClassRooms> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: StreamBuilder<List<String>>(
-                  stream: getAllClassrooms(),
-                  builder: ((context, snapshot) {
-                    if (snapshot.hasError) {
-                      print("Snapshor Error: ${snapshot.error}");
-                    }
-                    if (snapshot.hasData) {
-                      final classrooms = snapshot.data;
-                      final List<String> dataColumn = [
-                        'Name',
-                        'Edit',
-                        'Delete'
-                      ];
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SingleChildScrollView(
-                          child: DataTable(
-                              decoration: const BoxDecoration(
-                                color: Colors.grey,
-                              ),
-                              columns: buildColumn(dataColumn),
-                              rows: buildRow(classrooms)),
-                        ),
-                      );
-                    } else {
-                      return const Center(
-                        child: CupertinoActivityIndicator(),
-                      );
-                    }
-                  }),
-                ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: StreamBuilder<List<String>>(
+                stream: getAllClassrooms(),
+                builder: ((context, snapshot) {
+                  if (snapshot.hasError) {
+                    debugPrint("Snapshor Error: ${snapshot.error}");
+                  }
+                  if (snapshot.hasData) {
+                    final classrooms = snapshot.data;
+                    final List<String> dataColumn = ['Name', 'Edit', 'Delete'];
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        child: DataTable(
+                            decoration: const BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                            columns: buildColumn(dataColumn),
+                            rows: buildRow(classrooms)),
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                      child: CupertinoActivityIndicator(),
+                    );
+                  }
+                }),
               ),
             ),
+          ),
           GestureDetector(
             onTap: (() {
               createAlertDialog(context);

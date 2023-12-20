@@ -65,10 +65,7 @@ class _AddSbujectsState extends State<AddSbujects> {
   ];
 
   List<DataColumn> buildColumn(List<String> column) {
-    return column
-        .map((e) => DataColumn(
-            label: Text(e)))
-        .toList();
+    return column.map((e) => DataColumn(label: Text(e))).toList();
   }
 
   dynamic myProgressBar() {
@@ -335,7 +332,9 @@ class _AddSbujectsState extends State<AddSbujects> {
               TextButton(
                   onPressed: () {
                     if (validateForm()) {
-                      DocumentReference subjet = FirebaseFirestore.instance.collection('subjects').doc();
+                      DocumentReference subjet = FirebaseFirestore.instance
+                          .collection('subjects')
+                          .doc();
                       subjet.set({
                         'id': subjet.id,
                         'semester': selectedSemester,
@@ -393,45 +392,45 @@ class _AddSbujectsState extends State<AddSbujects> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: StreamBuilder<List<Subject>>(
-                  stream: getAllSubjects(),
-                  builder: ((context, snapshot) {
-                    if (snapshot.hasError) {
-                      print("Snapshot Error: ${snapshot.error}");
-                    }
-                    if (snapshot.hasData) {
-                      final subjects = snapshot.data;
-                      final List<String> dataColumn = [
-                        'Subject Code',
-                        'Subject Name',
-                        'Semester',
-                        'Department',
-                        'Course Type',
-                        'Edit',
-                        'Delete'
-                      ];
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: SingleChildScrollView(
-                          child: DataTable(
-                              decoration: const BoxDecoration(
-                                color: Colors.grey,
-                              ),
-                              columns: buildColumn(dataColumn),
-                              rows: buildRow(subjects)),
-                        ),
-                      );
-                    } else {
-                      return const Center(
-                        child: CupertinoActivityIndicator(),
-                      );
-                    }
-                  }),
-                ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: StreamBuilder<List<Subject>>(
+                stream: getAllSubjects(),
+                builder: ((context, snapshot) {
+                  if (snapshot.hasError) {
+                    debugPrint("Snapshot Error: ${snapshot.error}");
+                  }
+                  if (snapshot.hasData) {
+                    final subjects = snapshot.data;
+                    final List<String> dataColumn = [
+                      'Subject Code',
+                      'Subject Name',
+                      'Semester',
+                      'Department',
+                      'Course Type',
+                      'Edit',
+                      'Delete'
+                    ];
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SingleChildScrollView(
+                        child: DataTable(
+                            decoration: const BoxDecoration(
+                              color: Colors.grey,
+                            ),
+                            columns: buildColumn(dataColumn),
+                            rows: buildRow(subjects)),
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                      child: CupertinoActivityIndicator(),
+                    );
+                  }
+                }),
               ),
             ),
+          ),
           GestureDetector(
             onTap: (() {
               createAlertDialog(context);

@@ -33,12 +33,12 @@ class _SplashScreenState extends State<SplashScreen> {
               end: Alignment.bottomRight,
               colors: [AppColor.primaryLight, AppColor.primary]),
         ),
-        child: Center(
+        child: const Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             // ignore: prefer_const_literals_to_create_immutables
             children: [
-              const Text(
+              Text(
                 'School',
                 style: TextStyle(
                   color: Colors.white,
@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Text(
+              Text(
                 'ERP',
                 style: TextStyle(
                   color: Colors.white,
@@ -54,10 +54,10 @@ class _SplashScreenState extends State<SplashScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 height: 80.0,
               ),
-              const Image(image: AssetImage('assets/images/splash.png')),
+              Image(image: AssetImage('assets/images/splash.png')),
             ],
           ),
         ),
