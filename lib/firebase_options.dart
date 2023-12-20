@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,21 +52,12 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCV_AwrOPrSizlsz7C6c1szVgM_6Fcko1w',
-    appId: '1:763026051900:web:1491c32b42c3c23df60439',
-    messagingSenderId: '763026051900',
-    projectId: 'erp-school-master',
-    authDomain: 'erp-school-master.firebaseapp.com',
-    storageBucket: 'erp-school-master.appspot.com',
-    measurementId: 'G-XVHRTVMRNB',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBTrGJtsRN1KLLI3yJla58RUukwVrgtpg4',
-    appId: '1:763026051900:android:643abb35422f4acef60439',
-    messagingSenderId: '763026051900',
-    projectId: 'erp-school-master',
-    storageBucket: 'erp-school-master.appspot.com',
+    apiKey: 'AIzaSyAuqrrj6iErHd0pp1gRAJr0A8eSQByBin4',
+    appId: '1:38779452564:android:61d9e1fbc10e43a9da0881',
+    messagingSenderId: '38779452564',
+    projectId: 'crud-79b36',
+    databaseURL: 'https://crud-79b36-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'crud-79b36.appspot.com',
   );
 }
